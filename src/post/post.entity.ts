@@ -24,6 +24,9 @@ export class PostEnitity extends BaseEntity {
   summary: string;
 
   @Column()
+  tags: string;
+
+  @Column()
   created_at: Date;
 
   @Column()

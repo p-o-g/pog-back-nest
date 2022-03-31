@@ -1,5 +1,5 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { CreatePostDto } from './dto/post.dto';
+import { CreatePostDto } from './dto/create-post.dto';
 import { PostEnitity } from './post.entity';
 
 @EntityRepository(PostEnitity)
@@ -24,7 +24,13 @@ export class PostRepository extends Repository<PostEnitity> {
 
   async createPost(postDto: CreatePostDto): Promise<PostEnitity> {
     const post = this.create({
-      ...postDto,
+      user_id: postDto.userId,
+      title: postDto.title,
+      description: postDto.description,
+      ver: postDto.ver,
+      thumbnail: postDto.thumbnail,
+      summary: postDto.summary,
+      tags: postDto.tags,
       created_at: new Date(),
       updated_at: new Date(),
       is_deleted: false,
