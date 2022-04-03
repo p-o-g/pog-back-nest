@@ -1,4 +1,14 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Tag } from './tag.entity';
 
 @Entity()
 export class PostEnitity extends BaseEntity {
@@ -23,8 +33,9 @@ export class PostEnitity extends BaseEntity {
   @Column()
   summary: string;
 
-  @Column()
-  tags: string;
+  @ManyToMany(() => Tag, { eager: true })
+  @JoinTable()
+  tags: Tag[];
 
   @Column()
   created_at: Date;

@@ -1,6 +1,7 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PostEnitity } from './post.entity';
+import { Tag } from './tag.entity';
 
 @EntityRepository(PostEnitity)
 export class PostRepository extends Repository<PostEnitity> {
@@ -13,30 +14,15 @@ export class PostRepository extends Repository<PostEnitity> {
   }
 
   async getPostList(search: string | null): Promise<PostEnitity[]> {
-    const query = this.createQueryBuilder('postEnitity');
+    const query = this.createQueryBuilder('postEnitity').leftJoinAndSelect(
+      'postEnitity.tags',
+      'tags',
+    );
     if (search) {
       query.andWhere('postEntity.title like :search', {
         search: `%${search}%`,
       });
     }
     return query.getMany();
-  }
-
-  async createPost(postDto: CreatePostDto): Promise<PostEnitity> {
-    const post = this.create({
-      user_id: postDto.userId,
-      title: postDto.title,
-      description: postDto.description,
-      ver: postDto.ver,
-      thumbnail: postDto.thumbnail,
-      summary: postDto.summary,
-      tags: postDto.tags,
-      created_at: new Date(),
-      updated_at: new Date(),
-      is_deleted: false,
-    });
-
-    await this.save(post);
-    return post;
   }
 }

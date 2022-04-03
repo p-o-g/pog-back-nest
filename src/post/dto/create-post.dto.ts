@@ -1,5 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsNotEmpty, IsString } from 'class-validator';
 import { ReqInt, ReqString } from 'src/utils/dto-decorators';
 
 export class CreatePostDto {
@@ -18,8 +16,7 @@ export class CreatePostDto {
   @ReqString(100)
   thumbnail: string;
 
-  @IsString()
-  @ApiProperty({ required: false })
+  @ReqString(100)
   summary?: string;
 
   @ReqString(300)
