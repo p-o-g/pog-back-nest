@@ -1,28 +1,35 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { CreatePostDto } from './dto/create-post.dto';
-import { PostEnitity } from './post.entity';
-import { Tag } from './tag.entity';
+import { PostEntity } from './post.entity';
 
-@EntityRepository(PostEnitity)
-export class PostRepository extends Repository<PostEnitity> {
-  async getPostById(id: number): Promise<PostEnitity> {
-    const found = await this.findOne(id);
-    if (!found) {
-      throw new Error('Post not found');
-    }
-    return found;
+@EntityRepository(PostEntity)
+export class PostRepository extends Repository<PostEntity> {
+  async getPostById(id: number): Promise<PostEntity> {
+    const query = this.createQueryBuilder('postEntity').leftJoinAndSelect(
+      'postEntity.tags',
+      'tag',
+    );
+    return query
+      .where('postEntity.id = :id', {
+        id: id,
+      })
+      .andWhere('postEntity.is_deleted = false')
+      .getOne();
   }
 
-  async getPostList(search: string | null): Promise<PostEnitity[]> {
-    const query = this.createQueryBuilder('postEnitity').leftJoinAndSelect(
-      'postEnitity.tags',
-      'tags',
-    );
+  async getPostList(search: string | null): Promise<PostEntity[]> {
+    const query = this.createQueryBuilder('postEntity');
+
     if (search) {
-      query.andWhere('postEntity.title like :search', {
-        search: `%${search}%`,
-      });
+      return query
+        .where('postEntity.title like :search', {
+          search: `%${search}%`,
+        })
+        .andWhere('postEntity.is_deleted = false')
+        .leftJoinAndSelect('postEntity.tags', 'tags')
+        .getMany();
+
+      // console.log(query.getSql());
     }
-    return query.getMany();
+    return query.leftJoinAndSelect('postEntity.tags', 'tags').getMany();
   }
 }
